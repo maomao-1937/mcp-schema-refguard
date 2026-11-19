@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline JSON Schema reference scan for captured MCP tool schemas."""
 import json
+import math
 import sys
 from urllib.parse import unquote
 
@@ -12,6 +13,17 @@ MAX_REF_LENGTH = 2048
 
 class InputError(Exception):
     pass
+
+
+def finite_float(raw):
+    value = float(raw)
+    if not math.isfinite(value):
+        raise InputError("non_finite_number")
+    return value
+
+
+def reject_constant(_value):
+    raise InputError("non_finite_number")
 
 
 def pairs_no_duplicates(pairs):
@@ -137,7 +149,8 @@ def main():
     if len(raw) > MAX_BYTES:
         return fail("input_too_large")
     try:
-        document = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs_no_duplicates)
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs_no_duplicates,
+                              parse_constant=reject_constant, parse_float=finite_float)
         check_depth(document)
         result = inspect(document)
     except (UnicodeDecodeError, json.JSONDecodeError):
