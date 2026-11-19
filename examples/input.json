@@ -1,0 +1,19 @@
+{
+  "schemas": [
+    {
+      "label": "output",
+      "schema": {
+        "$defs": {
+          "item": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "name": {
+            "$ref": "#/$defs/item"
+          }
+        }
+      }
+    }
+  ]
+}
